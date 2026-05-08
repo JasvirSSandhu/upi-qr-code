@@ -1,7 +1,8 @@
 // UPI ID validation — format: localpart@handle
 // Handles: name@okhdfcbank, 9876543210@paytm, name@ybl, name@oksbi, etc.
 function isValidUPI(id) {
-  return /^[a-zA-Z0-9._\-]+@[a-zA-Z0-9]+$/.test(id);
+  const parts = id.split('@');
+  return parts.length === 2 && parts[0].length > 0 && parts[1].length > 0;
 }
 
 function showError(fieldId, hintId, show) {
