@@ -1,7 +1,7 @@
-// UPI ID validation — must match standard format: localpart@provider
+// UPI ID validation — format: localpart@handle
+// Handles: name@okhdfcbank, 9876543210@paytm, name@ybl, name@oksbi, etc.
 function isValidUPI(id) {
-  // Must contain exactly one @, localpart non-empty, provider non-empty (letters only)
-  return /^[a-zA-Z0-9._\-]+@[a-zA-Z]{3,}$/.test(id);
+  return /^[a-zA-Z0-9._\-]+@[a-zA-Z0-9]+$/.test(id);
 }
 
 function showError(fieldId, hintId, show) {
@@ -16,8 +16,16 @@ function showError(fieldId, hintId, show) {
   }
 }
 
-// On page load, extract URL parameters, populate fields, and auto-generate QR if applicable
+// All DOM interactions after page is fully loaded
 window.onload = function () {
+  // Wire up button
+  document.getElementById("generateQR").addEventListener("click", generateQRCode);
+
+  // Clear errors on typing
+  document.getElementById("upiID").addEventListener("input", () => showError("upiID", "upiError", false));
+  document.getElementById("amount").addEventListener("input", () => showError("amount", "amountError", false));
+
+  // URL param pre-fill
   const urlParams = new URLSearchParams(window.location.search);
   const upiID  = urlParams.get("upiId");
   const amount = urlParams.get("amount");
@@ -29,14 +37,6 @@ window.onload = function () {
 
   if (upiID && amount) generateQRCode();
 };
-
-// Clear errors on input
-["upiID", "amount"].forEach(id => {
-  document.getElementById(id).addEventListener("input", () => {
-    const hintId = id === "upiID" ? "upiError" : "amountError";
-    showError(id, hintId, false);
-  });
-});
 
 // Function to generate QR code
 function generateQRCode() {
@@ -94,5 +94,3 @@ function generateQRCode() {
     qrSection.classList.add('visible');
   });
 }
-
-document.getElementById("generateQR").addEventListener("click", generateQRCode);
